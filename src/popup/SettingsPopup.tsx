@@ -3,6 +3,8 @@ import { useEffect, useState } from "react"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
+import { STORAGE_KEYS } from "~utils/consts"
+
 import useDebounce from "~hooks/useDebounce"
 import { formatDB, getDBTagsProperties, getIcon } from "~utils/functions/notion"
 import type { PopupEnum, StoredDatabase } from "~utils/types"
@@ -30,6 +32,10 @@ function SettingsPopup() {
   const [databases, setDatabases] = useStorage<StoredDatabase[]>(
     "databases",
     []
+  )
+  const [globalAutoSave, setGlobalAutoSave] = useStorage<boolean>(
+    STORAGE_KEYS.globalAutoSave,
+    false
   )
 
   useEffect(() => {
@@ -199,6 +205,24 @@ function SettingsPopup() {
           {databases.length > 0 && (
             <>
               <div className="border my-3" />
+              <div className="flex items-center justify-between mb-2">
+                <label
+                  htmlFor="globalAutoSave"
+                  className="text-sm font-medium cursor-pointer">
+                  Global autosave
+                </label>
+                <input
+                  id="globalAutoSave"
+                  type="checkbox"
+                  checked={globalAutoSave ?? false}
+                  onChange={(e) => setGlobalAutoSave(e.target.checked)}
+                  className="cursor-pointer"
+                />
+              </div>
+              <p className="text-xs text-gray-500 mb-3">
+                Automatically save every conversation to the selected database
+                when a response finishes.
+              </p>
               <button
                 onClick={() => setPopup("ecology")}
                 className="button bg-green-600 text-sm font-normal">

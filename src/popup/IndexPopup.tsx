@@ -23,12 +23,10 @@ import { sendToBackground } from "@plasmohq/messaging"
 import { checkSaveConflict } from "~api/checkSaveConflict"
 import { parseSave } from "~api/parseSave"
 import { saveChat } from "~api/saveChat"
-import Disclosure from "~common/components/Disclosure"
 import DropdownPopup from "~common/components/Dropdown"
 import NoTagButton from "~common/components/NoTagButton"
 import Spinner from "~common/components/Spinner"
 import LogoIcon from "~common/logo"
-import StarIcon from "~common/star"
 import usePercentageAnimation from "~hooks/useSavePercentage"
 import useSavePercentage from "~hooks/useSavePercentage"
 import useTags from "~hooks/useTags"
@@ -387,33 +385,23 @@ function IndexPopup() {
             />
             <label htmlFor="openInNotion">Open in Notion</label>
           </div>
-          {!(isPremium || activeTrial) ? (
+          <div className="mt-2 flex flex-col gap-1">
             <button
-              onClick={() => setPopup("premium")}
-              className="button-outline text-sm font-normal">
-              {i18n("index_tryPremium")}
+              disabled={!chatID}
+              className="button-outline text-sm font-normal w-full"
+              onClick={() => handleSave(true)}>
+              {chatID
+                ? autoSaveEnabled
+                  ? i18n("autosave_disable")
+                  : i18n("autosave_enable")
+                : i18n("autosave_wrongpage")}
             </button>
-          ) : (
-            <Disclosure
-              title={i18n("index_premiumFeatures")}
-              className="my-2 text-yellow-500 font-semibold bg-yellow-50 rounded">
-              <button
-                disabled={!chatID}
-                className="button-outline text-sm font-normal my-2 w-full"
-                onClick={() => handleSave(true)}>
-                {chatID
-                  ? autoSaveEnabled
-                    ? i18n("autosave_disable")
-                    : i18n("autosave_enable")
-                  : i18n("autosave_wrongpage")}
-              </button>
-              <button
-                className="button-outline text-sm font-normal w-full"
-                onClick={() => setPopup("history")}>
-                {i18n("history")}
-              </button>
-            </Disclosure>
-          )}
+            <button
+              className="button-outline text-sm font-normal w-full"
+              onClick={() => setPopup("history")}>
+              {i18n("history")}
+            </button>
+          </div>
         </>
       )}
       {error?.message && (

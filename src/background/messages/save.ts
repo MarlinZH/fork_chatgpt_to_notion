@@ -2,6 +2,7 @@ import type { PlasmoMessaging } from "@plasmohq/messaging"
 import { Storage } from "@plasmohq/storage"
 
 import { save } from "~background/functions"
+import { enqueueAutoSave } from "~background/functions/syncQueue"
 import { STORAGE_KEYS } from "~utils/consts"
 import type { ModelHeaders, SupportedModels } from "~utils/types"
 
@@ -24,13 +25,34 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
 
     const { convId, turn, saveBehavior, conflictingPageId, autoSave } = req.body
 
-    const saveRes = await save(convId, model, {
+    const saveArgs = {
+      convId,
+      model,
       rawHeaders: cacheHeaders.headers,
-      turn,
+      turn: turn ?? -1,
       saveBehavior,
       conflictingPageId,
-      autoSave
-    })
+      autoSave: !!autoSave
+    }
+
+    // Route autosave calls through the dedup queue; manual saves go straight through
+    const saveRes = autoSave
+      ? await enqueueAutoSave(saveArgs, (args) =>
+          save(args.convId, args.model, {
+            rawHeaders: args.rawHeaders,
+            turn: args.turn,
+            saveBehavior: args.saveBehavior,
+            conflictingPageId: args.conflictingPageId,
+            autoSave: args.autoSave
+          })
+        )
+      : await save(convId, model, {
+          rawHeaders: cacheHeaders.headers,
+          turn,
+          saveBehavior,
+          conflictingPageId,
+          autoSave
+        })
 
     res.send(saveRes)
   } catch (err) {

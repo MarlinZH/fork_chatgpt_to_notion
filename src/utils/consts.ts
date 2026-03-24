@@ -32,7 +32,8 @@ export const STORAGE_KEYS = {
   ecoModeActive: "ecoModeActive",
   ecoModePopup: "ecoModePopup",
   ecoModeNotification: "ecoModeNotification",
-  model: "model"
+  model: "model",
+  globalAutoSave: "globalAutoSave"
 } as const
 
 export const SUPPORTED_HISTORY_SAVE = ["chatgpt", "deepseek", "claude"]

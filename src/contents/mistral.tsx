@@ -79,7 +79,7 @@ export const Content = ({ parent }: Props) => {
   }, [])
 
   useEffect(() => {
-    if (!(isPremium || activeTrial) || !chatID) return
+    if (!chatID) return
     const checkAutosave = async () => {
       const config = await getChatConfig(chatID)
       if (!config) return

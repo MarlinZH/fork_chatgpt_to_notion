@@ -97,7 +97,7 @@ export const Content = ({ parent }: Props) => {
   }, [parent])
 
   useEffect(() => {
-    if (!(isPremium || activeTrial) || !chatID) return
+    if (!chatID) return
     const checkAutosave = async () => {
       const config = await getChatConfig(chatID)
       if (!config) return
@@ -116,7 +116,7 @@ export const Content = ({ parent }: Props) => {
         return lastPin.firstChild?.parentNode?.isSameNode(parentNode) ?? false
       })()
     )
-  }, [chatID, status, isPremium, activeTrial, parent])
+  }, [chatID, status, parent])
 
   const LastMessageIcon = useCallback(() => {
     switch (status) {
